@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranqueamento de Desbravadores</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> Ranqueamento de Desbravadores</h1>
+            <p>Gerencia atividades</p>
+        </header>
+        
+        <div class="alert" id="alertMessage"></div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="ranking">Ranking</div>
+            <div class="tab" data-tab="desbravadores">Desbravadores</div>
+            <div class="tab" data-tab="atividades">Atividades</div>
+            <div class="tab" data-tab="participacao">Registrar Participação</div>
+        </div>
+        
+        <div class="tab-content active" id="ranking">
+            <h2>Ranking de Desbravadores</h2>
+            <div class="top3" id="top3Container"></div>
+            <div id="rankingList"></div>
+        </div>
+        
+        <div class="tab-content" id="desbravadores">
+            <h2>Gerenciar Desbravadores</h2>
+            <form id="desbravadorForm">
+                <div class="form-group">
+                    <label for="desbravadorId">ID</label>
+                    <input type="text" id="desbravadorId" required placeholder="Ex: DB001">
+                </div>
+                <div class="form-group">
+                    <label for="desbravadorNome">Nome</label>
+                    <input type="text" id="desbravadorNome" required placeholder="Nome completo">
+                </div>
+                <div class="form-group">
+                    <label for="desbravadorFuncao">Função</label>
+                    <select id="desbravadorFuncao" required>
+                        <option value="">Selecione uma função</option>
+                        <option value="Desbravador">Desbravador(a)</option>
+                        <option value="Capitão(a)">Capitão(a)</option>
+                        <option value="Secretario(a)">Secretario(a)</option>
+                        <option value="Sub-conselheiro(a)">Sub-conselheiro(a)</option>
+                        <option value="Conselheiro(a)">Conselheiro(a)</option>
+                        
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="desbravadorUnidade">Unidade</label>
+                    <input type="text" id="desbravadorUnidade" required placeholder="Nome da unidade">
+                </div>
+                <button type="submit">Adicionar Desbravador</button>
+            </form>
+            <h3>Lista de Desbravadores</h3>
+            <table id="desbravadoresTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Função</th>
+                        <th>Unidade</th>
+                        <th>Pontos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <div class="tab-content" id="atividades">
+            <h2>Gerenciar Atividades</h2>
+            <form id="atividadeForm">
+                <div class="form-group">
+                    <label for="atividadeNome">Nome da Atividade</label>
+                    <input type="text" id="atividadeNome" required placeholder="Ex: Caminhada Ecológica">
+                </div>
+                <div class="form-group">
+                    <label for="atividadePontos">Pontos</label>
+                    <input type="number" id="atividadePontos" required min="1" placeholder="Quantidade de pontos">
+                </div>
+                <button type="submit">Adicionar Atividade</button>
+            </form>
+            <h3>Lista de Atividades</h3>
+            <table id="atividadesTable">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Pontos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <div class="tab-content" id="participacao">
+            <h2>Registrar Participação em Atividades</h2>
+            <form id="participacaoForm">
+                <div class="form-group">
+                    <label for="participacaoDesbravador">Desbravador</label>
+                    <select id="participacaoDesbravador" required>
+                        <option value="">Selecione um desbravador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="participacaoAtividade">Atividade</label>
+                    <select id="participacaoAtividade" required>
+                        <option value="">Selecione uma atividade</option>
+                    </select>
+                </div>
+                <button type="submit">Registrar Participação</button>
+            </form>
+            <h3>Histórico de Participações</h3>
+            <table id="participacoesTable">
+                <thead>
+                    <tr>
+                        <th>Desbravador</th>
+                        <th>Atividade</th>
+                        <th>Pontos</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
