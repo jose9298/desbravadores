@@ -26,6 +26,12 @@ header {
     border-bottom: 1px solid #ddd;
 }
 
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 h1 {
     color: #2c3e50;
     margin-bottom: 10px;
@@ -53,6 +59,14 @@ h1 {
     margin-bottom: -1px;
     font-weight: bold;
     color: #3498db;
+}
+
+.hidden-tab {
+    display: none;
+}
+
+.show-tab {
+    display: block !important;
 }
 
 .tab-content {
@@ -103,6 +117,32 @@ button {
 
 button:hover {
     background-color: #2980b9;
+}
+
+.btn-logout {
+    padding: 5px 10px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn-logout:hover {
+    background-color: #c0392b;
+}
+
+#userInfo {
+    display: flex;
+    align-items: center;
+}
+
+#usernameDisplay {
+    font-weight: bold;
+    color: #2c3e50;
 }
 
 table {
@@ -230,15 +270,6 @@ tr:hover {
     display: none;
 }
 
-.badge {
-    display: inline-block;
-    padding: 3px 8px;
-    background-color: #3498db;
-    color: white;
-    border-radius: 12px;
-    font-size: 12px;
-    margin-left: 5px;
-}
 .btn-remover {
     padding: 5px 10px;
     background-color: #e74c3c;
@@ -253,6 +284,7 @@ tr:hover {
 .btn-remover:hover {
     background-color: #c0392b;
 }
+
 .btn-remover-atividade {
     padding: 5px 10px;
     background-color: #e74c3c;
