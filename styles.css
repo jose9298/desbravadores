@@ -299,3 +299,9 @@ tr:hover {
 .btn-remover-atividade:hover {
     background-color: #c0392b;
 }
+body {
+    background-image: url('FUNDO-POST.jpg');
+    background-size: cover; /* Ajusta a imagem para cobrir toda a tela */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Evita repetição da imagem */
+}
