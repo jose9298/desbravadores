@@ -3,6 +3,15 @@ let desbravadores = [];
 let atividades = [];
 let participacoes = [];
 
+// Sistema de autenticação
+let usuarios = [
+    { username: 'admin', password: 'admin123', isAdmin: true },
+    { username: 'conselheiro', password: 'clube123', isAdmin: true },
+    { username: 'visitante', password: 'visitante123', isAdmin: false }
+];
+
+let usuarioLogado = null;
+
 // Função para exibir alerta
 function mostrarAlerta(mensagem, tipo = 'sucesso') {
     const alerta = document.getElementById('alertMessage');
@@ -21,23 +30,75 @@ function mostrarAlerta(mensagem, tipo = 'sucesso') {
         alerta.style.display = 'none';
     }, 3000);
 }
+
+// Funções de autenticação
+function fazerLogin(username, password) {
+    const usuario = usuarios.find(u => u.username === username && u.password === password);
+    if (usuario) {
+        usuarioLogado = usuario;
+        localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+        mostrarAlerta('Login realizado com sucesso!');
+        atualizarInterfaceAutenticada();
+        return true;
+    }
+    mostrarAlerta('Usuário ou senha incorretos!', 'erro');
+    return false;
+}
+
+function fazerLogout() {
+    usuarioLogado = null;
+    localStorage.removeItem('usuarioLogado');
+    mostrarAlerta('Logout realizado com sucesso!');
+    atualizarInterfaceAutenticada();
+}
+
+function verificarAutenticacao() {
+    const usuarioData = localStorage.getItem('usuarioLogado');
+    if (usuarioData) {
+        usuarioLogado = JSON.parse(usuarioData);
+        atualizarInterfaceAutenticada();
+    }
+}
+
+function atualizarInterfaceAutenticada() {
+    const userInfo = document.getElementById('userInfo');
+    const usernameDisplay = document.getElementById('usernameDisplay');
+    const loginTab = document.getElementById('loginTab');
+    const adminTabs = document.querySelectorAll('.hidden-tab');
+    
+    if (usuarioLogado) {
+        userInfo.style.display = 'flex';
+        usernameDisplay.textContent = usuarioLogado.username;
+        loginTab.style.display = 'none';
+        
+        if (usuarioLogado.isAdmin) {
+            adminTabs.forEach(tab => tab.classList.add('show-tab'));
+        }
+        
+        if (document.querySelector('.tab[data-tab="login"]').classList.contains('active')) {
+            document.querySelector('.tab[data-tab="ranking"]').click();
+        }
+    } else {
+        userInfo.style.display = 'none';
+        loginTab.style.display = 'block';
+        adminTabs.forEach(tab => tab.classList.remove('show-tab'));
+    }
+}
+
 // Função para remover atividade
 function removerAtividade(nome) {
+    if (!usuarioLogado || !usuarioLogado.isAdmin) {
+        mostrarAlerta('Apenas administradores podem remover atividades!', 'erro');
+        return;
+    }
+
     const confirmacao = confirm('Tem certeza que deseja remover esta atividade?');
     if (!confirmacao) return;
 
-    // Remover atividade
     atividades = atividades.filter(a => a.nome !== nome);
-
-    // Remover participações relacionadas à atividade
     participacoes = participacoes.filter(p => p.atividadeNome !== nome);
-
-    // Salvar dados atualizados no localStorage
     salvarDados();
-
-    // Atualizar a interface
     atualizarInterfaceCompleta();
-
     mostrarAlerta('Atividade removida com sucesso!');
 }
 
@@ -57,6 +118,11 @@ document.querySelectorAll('.tab').forEach(tab => {
 // Formulário de desbravadores
 document.getElementById('desbravadorForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    if (!usuarioLogado || !usuarioLogado.isAdmin) {
+        mostrarAlerta('Apenas administradores podem adicionar desbravadores!', 'erro');
+        return;
+    }
     
     const id = document.getElementById('desbravadorId').value;
     const nome = document.getElementById('desbravadorNome').value;
@@ -80,6 +146,11 @@ document.getElementById('desbravadorForm').addEventListener('submit', function(e
 document.getElementById('atividadeForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
+    if (!usuarioLogado || !usuarioLogado.isAdmin) {
+        mostrarAlerta('Apenas administradores podem adicionar atividades!', 'erro');
+        return;
+    }
+    
     const nome = document.getElementById('atividadeNome').value;
     const pontos = parseInt(document.getElementById('atividadePontos').value);
     
@@ -100,6 +171,11 @@ document.getElementById('atividadeForm').addEventListener('submit', function(e) 
 document.getElementById('participacaoForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
+    if (!usuarioLogado || !usuarioLogado.isAdmin) {
+        mostrarAlerta('Apenas administradores podem registrar participações!', 'erro');
+        return;
+    }
+
     const desbravadorId = document.getElementById('participacaoDesbravador').value;
     const atividadeNome = document.getElementById('participacaoAtividade').value;
 
@@ -111,7 +187,6 @@ document.getElementById('participacaoForm').addEventListener('submit', function(
         return;
     }
 
-    // Registrar participação
     const data = new Date().toLocaleDateString('pt-BR');
 
     participacoes.push({
@@ -121,41 +196,34 @@ document.getElementById('participacaoForm').addEventListener('submit', function(
         data
     });
 
-    // Atualizar pontos do desbravador
     desbravador.pontos += atividade.pontos;
 
-    // Salvar no localStorage
     salvarDados();
-
-    // Limpar formulário
     this.reset();
-
-    // Atualizar tabelas e ranking
     atualizarTabelaParticipacoes();
     atualizarTabelaDesbravadores();
     atualizarRanking();
 
     mostrarAlerta('Participação registrada com sucesso!');
 });
+
 // Função para remover desbravador
 function removerDesbravador(id) {
+    if (!usuarioLogado || !usuarioLogado.isAdmin) {
+        mostrarAlerta('Apenas administradores podem remover desbravadores!', 'erro');
+        return;
+    }
+
     const confirmacao = confirm('Tem certeza que deseja remover este desbravador?');
     if (!confirmacao) return;
 
-    // Remover desbravador
     desbravadores = desbravadores.filter(d => d.id !== id);
-
-    // Remover participações relacionadas ao desbravador
     participacoes = participacoes.filter(p => p.desbravadorId !== id);
-
-    // Salvar dados atualizados no localStorage
     salvarDados();
-
-    // Atualizar a interface
     atualizarInterfaceCompleta();
-
     mostrarAlerta('Desbravador removido com sucesso!');
 }
+
 // Funções para atualizar tabelas
 function atualizarTabelaDesbravadores() {
     const tbody = document.querySelector('#desbravadoresTable tbody');
@@ -176,7 +244,6 @@ function atualizarTabelaDesbravadores() {
         tbody.appendChild(tr);
     });
 
-// Adicionar evento de clique para os botões de remoção
     document.querySelectorAll('.btn-remover').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
@@ -201,7 +268,6 @@ function atualizarTabelaAtividades() {
         tbody.appendChild(tr);
     });
 
-    // Adicionar evento de clique para os botões de remoção
     document.querySelectorAll('.btn-remover-atividade').forEach(btn => {
         btn.addEventListener('click', function() {
             const nome = this.getAttribute('data-nome');
@@ -311,6 +377,8 @@ function carregarDados() {
     if (desbravadoresData) desbravadores = JSON.parse(desbravadoresData);
     if (atividadesData) atividades = JSON.parse(atividadesData);
     if (participacoesData) participacoes = JSON.parse(participacoesData);
+    
+    verificarAutenticacao();
 }
 
 function atualizarInterfaceCompleta() {
@@ -321,6 +389,17 @@ function atualizarInterfaceCompleta() {
     atualizarSelectAtividades();
     atualizarRanking();
 }
+
+// Event listeners para autenticação
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+    fazerLogin(username, password);
+    this.reset();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', fazerLogout);
 
 // Carregar dados e inicializar interface
 window.addEventListener('DOMContentLoaded', () => {
