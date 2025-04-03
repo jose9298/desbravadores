@@ -11,6 +11,8 @@ let usuarios = [
 ];
 
 let usuarioLogado = null;
+// Inicializar o próximoId
+let proximoId = 1;
 
 // Função para exibir alerta
 function mostrarAlerta(mensagem, tipo = 'sucesso') {
@@ -85,6 +87,32 @@ function atualizarInterfaceAutenticada() {
     }
 }
 
+// Gerador de ID automático
+function gerarNovoId() {
+    // Verificar se há um valor salvo no localStorage
+    const ultimoIdSalvo = localStorage.getItem('ultimoIdDesbravador');
+    if (ultimoIdSalvo) {
+        proximoId = parseInt(ultimoIdSalvo) + 1;
+    } else {
+        // Se não houver valor salvo e existirem desbravadores, encontre o maior ID
+        if (desbravadores.length > 0) {
+            const idsNumericos = desbravadores
+                .map(d => parseInt(d.id.replace('DB', '')))
+                .filter(id => !isNaN(id));
+            
+            if (idsNumericos.length > 0) {
+                proximoId = Math.max(...idsNumericos) + 1;
+            }
+        }
+    }
+    
+    const idFormatado = `DB${proximoId.toString().padStart(3, '0')}`;
+    // Salvar no localStorage para manter o controle
+    localStorage.setItem('ultimoIdDesbravador', proximoId.toString());
+    proximoId++;
+    return idFormatado;
+}
+
 // Função para remover atividade
 function removerAtividade(nome) {
     if (!usuarioLogado || !usuarioLogado.isAdmin) {
@@ -115,7 +143,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     });
 });
 
-// Formulário de desbravadores
+// Formulário de desbravadores - Modificado para usar ID automático
 document.getElementById('desbravadorForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -124,15 +152,12 @@ document.getElementById('desbravadorForm').addEventListener('submit', function(e
         return;
     }
     
-    const id = document.getElementById('desbravadorId').value;
     const nome = document.getElementById('desbravadorNome').value;
     const funcao = document.getElementById('desbravadorFuncao').value;
     const unidade = document.getElementById('desbravadorUnidade').value;
     
-    if (desbravadores.some(d => d.id === id)) {
-        mostrarAlerta('Já existe um desbravador com este ID!', 'erro');
-        return;
-    }
+    // Gerar ID automaticamente
+    const id = gerarNovoId();
     
     desbravadores.push({ id, nome, funcao, unidade, pontos: 0 });
     salvarDados();
@@ -203,6 +228,7 @@ document.getElementById('participacaoForm').addEventListener('submit', function(
     atualizarTabelaParticipacoes();
     atualizarTabelaDesbravadores();
     atualizarRanking();
+    atualizarRankingUnidades(); // Atualizar o ranking por unidade
 
     mostrarAlerta('Participação registrada com sucesso!');
 });
@@ -318,7 +344,7 @@ function atualizarSelectAtividades() {
     });
 }
 
-// Atualizar ranking
+// Atualizar ranking por desbravador
 function atualizarRanking() {
     const rankingDesbravadores = [...desbravadores].sort((a, b) => b.pontos - a.pontos);
     const top3Container = document.getElementById('top3Container');
@@ -362,6 +388,85 @@ function atualizarRanking() {
     });
 }
 
+// Nova função para ranking por unidade
+function atualizarRankingUnidades() {
+    // Agrupar desbravadores por unidade e somar pontos
+    const unidades = {};
+    desbravadores.forEach(desbravador => {
+        if (!unidades[desbravador.unidade]) {
+            unidades[desbravador.unidade] = {
+                nome: desbravador.unidade,
+                pontos: 0,
+                membros: 0
+            };
+        }
+        unidades[desbravador.unidade].pontos += desbravador.pontos;
+        unidades[desbravador.unidade].membros += 1;
+    });
+    
+    // Converter para array e ordenar por pontos
+    const rankingUnidades = Object.values(unidades).sort((a, b) => b.pontos - a.pontos);
+    
+    const rankingUnidadesContainer = document.getElementById('rankingUnidadesContainer');
+    rankingUnidadesContainer.innerHTML = '';
+    
+    // Exibir unidades no pódio
+    if (rankingUnidades.length > 0) {
+        const podioClasses = ['first', 'second', 'third'];
+        const podioNumeros = ['1', '2', '3'];
+        
+        for (let i = 0; i < Math.min(3, rankingUnidades.length); i++) {
+            const unidade = rankingUnidades[i];
+            const podio = document.createElement('div');
+            podio.className = `podium ${podioClasses[i]}`;
+            podio.innerHTML = `
+                <div class="podium-position">${podioNumeros[i]}</div>
+                <div class="podium-name">${unidade.nome}</div>
+                <div class="podium-details">${unidade.membros} membros</div>
+                <div class="podium-points">${unidade.pontos} pontos</div>
+            `;
+            rankingUnidadesContainer.appendChild(podio);
+        }
+    }
+    
+    // Listar demais unidades
+    const listaUnidades = document.getElementById('rankingUnidadesList');
+    listaUnidades.innerHTML = '';
+    
+    rankingUnidades.forEach((unidade, index) => {
+        if (index < 3) return;
+        
+        const card = document.createElement('div');
+        card.className = 'ranking-card';
+        card.innerHTML = `
+            <div class="ranking-position">${index + 1}</div>
+            <div class="ranking-info">
+                <div class="ranking-name">${unidade.nome}</div>
+                <div class="ranking-details">${unidade.membros} membros</div>
+            </div>
+            <div class="ranking-points">${unidade.pontos} pts</div>
+        `;
+        listaUnidades.appendChild(card);
+    });
+}
+
+// Alternar entre ranking de desbravadores e unidades
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoRankingSelect = document.getElementById('tipoRanking');
+    const rankingDesbravadoresSection = document.getElementById('rankingDesbravadoresSection');
+    const rankingUnidadesSection = document.getElementById('rankingUnidadesSection');
+    
+    tipoRankingSelect.addEventListener('change', function() {
+        if (this.value === 'desbravadores') {
+            rankingDesbravadoresSection.style.display = 'block';
+            rankingUnidadesSection.style.display = 'none';
+        } else {
+            rankingDesbravadoresSection.style.display = 'none';
+            rankingUnidadesSection.style.display = 'block';
+        }
+    });
+});
+
 // Salvar e carregar dados do localStorage
 function salvarDados() {
     localStorage.setItem('desbravadores', JSON.stringify(desbravadores));
@@ -388,6 +493,7 @@ function atualizarInterfaceCompleta() {
     atualizarSelectDesbravadores();
     atualizarSelectAtividades();
     atualizarRanking();
+    atualizarRankingUnidades(); // Atualizar também o ranking por unidade
 }
 
 // Event listeners para autenticação
@@ -405,4 +511,14 @@ document.getElementById('logoutBtn').addEventListener('click', fazerLogout);
 window.addEventListener('DOMContentLoaded', () => {
     carregarDados();
     atualizarInterfaceCompleta();
+    
+    // Verificar se está em dispositivo móvel para ajuste da interface
+    if (window.innerWidth <= 768) {
+        document.querySelector('.container').classList.add('mobile-view');
+    }
+    
+    // Tornar o menu hamburguer funcional em telas pequenas
+    document.getElementById('mobileMenuToggle').addEventListener('click', function() {
+        document.querySelector('.tabs').classList.toggle('show-mobile-menu');
+    });
 });
