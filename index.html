@@ -6,152 +6,258 @@
     <title>Ranqueamento de Desbravadores</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="LOGO DESBRAVADORES redondo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
             <div class="header-top">
-                <h1>Ranqueamento de Desbravadores</h1>
+                <h1>
+                    <img src="LOGO DESBRAVADORES redondo.png" alt="Logo Desbravadores" class="logo">
+                    Ranqueamento de Desbravadores
+                </h1>
                 <div id="userInfo" style="display: none;">
+                    <span class="user-icon"><i class="fas fa-user-circle"></i></span>
                     <span id="usernameDisplay"></span>
-                    <button id="logoutBtn" class="btn-logout">Sair</button>
+                    <button id="logoutBtn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Sair</button>
                 </div>
+                <button id="mobileMenuToggle" class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
-            <p>Gerencia atividades</p>
+            <p class="subtitle">Sistema de gerenciamento de atividades e pontuação</p>
         </header>
         
         <div class="alert" id="alertMessage"></div>
         
-        <div class="tabs">
-            <div class="tab" data-tab="login" id="loginTab">Login</div>
-            <div class="tab active" data-tab="ranking">Ranking</div>
-            <div class="tab hidden-tab" data-tab="desbravadores">Desbravadores</div>
-            <div class="tab hidden-tab" data-tab="atividades">Atividades</div>
-            <div class="tab hidden-tab" data-tab="participacao">Registrar Participação</div>
-        </div>
+        <nav class="tabs">
+            <div class="tab" data-tab="login" id="loginTab">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </div>
+            <div class="tab active" data-tab="ranking">
+                <i class="fas fa-trophy"></i> Ranking
+            </div>
+            <div class="tab hidden-tab" data-tab="desbravadores">
+                <i class="fas fa-users"></i> Desbravadores
+            </div>
+            <div class="tab hidden-tab" data-tab="atividades">
+                <i class="fas fa-tasks"></i> Atividades
+            </div>
+            <div class="tab hidden-tab" data-tab="participacao">
+                <i class="fas fa-clipboard-check"></i> Registrar Participação
+            </div>
+        </nav>
         
-        <div class="tab-content" id="login">
-            <h2>Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginUsername">Usuário</label>
-                    <input type="text" id="loginUsername" required placeholder="Digite seu usuário">
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Senha</label>
-                    <input type="password" id="loginPassword" required placeholder="Digite sua senha">
-                </div>
-                <button type="submit">Entrar</button>
-            </form>
-        </div>
-        
-        <div class="tab-content active" id="ranking">
-            <h2>Ranking de Desbravadores</h2>
-            <div class="top3" id="top3Container"></div>
-            <div id="rankingList"></div>
-        </div>
-        
-        <div class="tab-content" id="desbravadores">
-            <h2>Gerenciar Desbravadores</h2>
-            <form id="desbravadorForm">
-                <div class="form-group">
-                    <label for="desbravadorId">ID</label>
-                    <input type="text" id="desbravadorId" required placeholder="Ex: DB001">
-                </div>
-                <div class="form-group">
-                    <label for="desbravadorNome">Nome</label>
-                    <input type="text" id="desbravadorNome" required placeholder="Nome completo">
-                </div>
-                <div class="form-group">
-                    <label for="desbravadorFuncao">Função</label>
-                    <select id="desbravadorFuncao" required>
-                        <option value="">Selecione uma função</option>
-                        <option value="Desbravador">Desbravador(a)</option>
-                        <option value="Capitão(a)">Capitão(a)</option>
-                        <option value="Secretario(a)">Secretario(a)</option>
-                        <option value="Sub-conselheiro(a)">Sub-conselheiro(a)</option>
-                        <option value="Conselheiro(a)">Conselheiro(a)</option>
+        <main>
+            <section class="tab-content" id="login">
+                <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+                <form id="loginForm" class="card-form">
+                    <div class="form-group">
+                        <label for="loginUsername">Usuário</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="loginUsername" required placeholder="Digite seu usuário">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Senha</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="loginPassword" required placeholder="Digite sua senha">
+                            <i class="fas fa-eye-slash toggle-password" id="togglePassword"></i>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+                </form>
+            </section>
+            
+            <section class="tab-content active" id="ranking">
+                <h2><i class="fas fa-trophy"></i> Ranking</h2>
+                
+                <div class="ranking-toggle">
+                    <label for="tipoRanking">Visualizar ranking por:</label>
+                    <select id="tipoRanking" class="select-styled">
+                        <option value="desbravadores">Desbravadores</option>
+                        <option value="unidades">Unidades</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="desbravadorUnidade">Unidade</label>
-                    <input type="text" id="desbravadorUnidade" required placeholder="Nome da unidade">
+                
+                <div id="rankingDesbravadoresSection">
+                    <h3>Top Desbravadores</h3>
+                    <div class="top3" id="top3Container"></div>
+                    <div id="rankingList" class="ranking-list"></div>
                 </div>
-                <button type="submit">Adicionar Desbravador</button>
-            </form>
-            <h3>Lista de Desbravadores</h3>
-            <table id="desbravadoresTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Função</th>
-                        <th>Unidade</th>
-                        <th>Pontos</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+                
+                <div id="rankingUnidadesSection" style="display: none;">
+                    <h3>Top Unidades</h3>
+                    <div class="top3" id="rankingUnidadesContainer"></div>
+                    <div id="rankingUnidadesList" class="ranking-list"></div>
+                </div>
+            </section>
+            
+            <section class="tab-content" id="desbravadores">
+                <h2><i class="fas fa-users"></i> Gerenciar Desbravadores</h2>
+                <form id="desbravadorForm" class="card-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="desbravadorNome">Nome</label>
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" id="desbravadorNome" required placeholder="Nome completo">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="desbravadorFuncao">Função</label>
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-user-tag input-icon"></i>
+                                <select id="desbravadorFuncao" required>
+                                    <option value="">Selecione uma função</option>
+                                    <option value="Desbravador">Desbravador(a)</option>
+                                    <option value="Capitão(a)">Capitão(a)</option>
+                                    <option value="Secretario(a)">Secretario(a)</option>
+                                    <option value="Sub-conselheiro(a)">Sub-conselheiro(a)</option>
+                                    <option value="Conselheiro(a)">Conselheiro(a)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="desbravadorUnidade">Unidade</label>
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-home input-icon"></i>
+                                <input type="text" id="desbravadorUnidade" required placeholder="Nome da unidade">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary"><i class="fas fa-plus-circle"></i> Adicionar Desbravador</button>
+                </form>
+                
+                <div class="table-container">
+                    <h3><i class="fas fa-list"></i> Lista de Desbravadores</h3>
+                    <div class="search-container">
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-search input-icon"></i>
+                            <input type="text" id="searchDesbravadores" placeholder="Buscar desbravador...">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="desbravadoresTable" class="table-styled">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Função</th>
+                                    <th>Unidade</th>
+                                    <th>Pontos</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="tab-content" id="atividades">
+                <h2><i class="fas fa-tasks"></i> Gerenciar Atividades</h2>
+                <form id="atividadeForm" class="card-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="atividadeNome">Nome da Atividade</label>
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-clipboard-list input-icon"></i>
+                                <input type="text" id="atividadeNome" required placeholder="Ex: Caminhada Ecológica">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="atividadePontos">Pontos</label>
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-star input-icon"></i>
+                                <input type="number" id="atividadePontos" required min="1" placeholder="Quantidade de pontos">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary"><i class="fas fa-plus-circle"></i> Adicionar Atividade</button>
+                </form>
+                
+                <div class="table-container">
+                    <h3><i class="fas fa-list"></i> Lista de Atividades</h3>
+                    <div class="search-container">
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-search input-icon"></i>
+                            <input type="text" id="searchAtividades" placeholder="Buscar atividade...">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="atividadesTable" class="table-styled">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Pontos</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="tab-content" id="participacao">
+                <h2><i class="fas fa-clipboard-check"></i> Registrar Participação em Atividades</h2>
+                <form id="participacaoForm" class="card-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="participacaoDesbravador">Desbravador</label>
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-user input-icon"></i>
+                                <select id="participacaoDesbravador" required>
+                                    <option value="">Selecione um desbravador</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="participacaoAtividade">Atividade</label>
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-clipboard-list input-icon"></i>
+                                <select id="participacaoAtividade" required>
+                                    <option value="">Selecione uma atividade</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary"><i class="fas fa-check-circle"></i> Registrar Participação</button>
+                </form>
+                
+                <div class="table-container">
+                    <h3><i class="fas fa-history"></i> Histórico de Participações</h3>
+                    <div class="search-container">
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-search input-icon"></i>
+                            <input type="text" id="searchParticipacoes" placeholder="Buscar participação...">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="participacoesTable" class="table-styled">
+                            <thead>
+                                <tr>
+                                    <th>Desbravador</th>
+                                    <th>Atividade</th>
+                                    <th>Pontos</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
         
-        <div class="tab-content" id="atividades">
-            <h2>Gerenciar Atividades</h2>
-            <form id="atividadeForm">
-                <div class="form-group">
-                    <label for="atividadeNome">Nome da Atividade</label>
-                    <input type="text" id="atividadeNome" required placeholder="Ex: Caminhada Ecológica">
-                </div>
-                <div class="form-group">
-                    <label for="atividadePontos">Pontos</label>
-                    <input type="number" id="atividadePontos" required min="1" placeholder="Quantidade de pontos">
-                </div>
-                <button type="submit">Adicionar Atividade</button>
-            </form>
-            <h3>Lista de Atividades</h3>
-            <table id="atividadesTable">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Pontos</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-        
-        <div class="tab-content" id="participacao">
-            <h2>Registrar Participação em Atividades</h2>
-            <form id="participacaoForm">
-                <div class="form-group">
-                    <label for="participacaoDesbravador">Desbravador</label>
-                    <select id="participacaoDesbravador" required>
-                        <option value="">Selecione um desbravador</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="participacaoAtividade">Atividade</label>
-                    <select id="participacaoAtividade" required>
-                        <option value="">Selecione uma atividade</option>
-                    </select>
-                </div>
-                <button type="submit">Registrar Participação</button>
-            </form>
-            <h3>Histórico de Participações</h3>
-            <table id="participacoesTable">
-                <thead>
-                    <tr>
-                        <th>Desbravador</th>
-                        <th>Atividade</th>
-                        <th>Pontos</th>
-                        <th>Data</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+        <footer>
+            <p>&copy; 2025 Sistema de Ranqueamento de Desbravadores</p>
+        </footer>
     </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
